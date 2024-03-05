@@ -23,8 +23,8 @@ const checkForm = async () => {
     return
   }
   if (cuenta.value.length !== 3) {
-    console.log('Cuenta debe contener 12 caracteres')
-    alert('Cuenta debe contener 12 caracteres')
+    console.log('Cuenta debe contener 3 caracteres')
+    alert('Cuenta debe contener 3 caracteres')
     return
   }
   if (!moneda.value) {
@@ -37,6 +37,13 @@ const checkForm = async () => {
     alert('Falta ingresar el saldo')
     return
   }
+	/// completa solo el .value
+  // if (!cuenta.cuenta !== detalleCta.value.cuenta) {
+  //   console.log('Cuenta ya existe')
+  //   alert('Esta cuenta ya se encuentra registrada')
+  //   return
+  // }
+
   console.log('form submit')
   const data = {
     nombre: nombre.value,
@@ -57,11 +64,7 @@ const checkForm = async () => {
   console.log(response)
 }
 
-const tiposMoneda = [
-  { id: 0, simbolo: '₡' },
-  { id: 1, simbolo: '$' },
-  { id: 2, simbolo: 'Eur' }
-]
+
 </script>
 
 <template>
