@@ -2,68 +2,77 @@
 import { ref, computed, onMounted } from 'vue'
 import inputBase from '../components/inputBase.vue'
 
+const cuentasRegistradas = ref([])
+const cuentaOrigen = ref(null)
+const cuentaDestino = ref(null)
+const monto = ref(null)
+const newNombre = ref(null)
+const newCuenta = ref(null)
+const newMoneda = ref(null)
+const mostrarEdit = ref(false)
+const cuentaPorEditar = ref(null)
+const mostrarTraslado = ref(false)
+const tiposMoneda = [
+  { id: 0, simbolo: '₡' },
+  { id: 1, simbolo: '$' },
+  { id: 2, simbolo: 'Eur' }
+]
+
 const obtenerTotalCuentas = async () => {
   try {
-    const response = await fetch('http://localhost:3001/home/obtenerCuentas')
+    const response = await fetch('http://localhost:3002/home/obtenerCuentas')
     const cuentas = await response.json()
     cuentasRegistradas.value = cuentas
   } catch (error) {
     console.error('Error a obtener cuentas:', error)
   }
 }
-const cuentasRegistradas = ref([])
 
 onMounted(() => {
   obtenerTotalCuentas()
 })
 
-// const editarCuenta = (cuenta) => {
-//   console.log('Editar cuenta:', cuenta)
-// }
-/////////
+const eliminarCuenta = async (cuenta) => {
+  console.log('cuenta es:', cuenta)
+  try {
+    const response = await fetch(`http://localhost:3002/home/eliminarCuenta/${cuenta._id}`, {
+      method: 'DELETE'
+    })
 
-// const eliminarCuenta = async (cuentaId) => {
-//   console.log('cuentaId es:', cuentaId)
-//   try {
-// 		if (cuentaId.saldo !== 0) {
-//     console.log('cuenta.saldo es:', cuentaId.saldo)
-
-//     console.log('La cuenta a eliminar debe tener un saldo de cero')
-//     alert('La cuenta a eliminar debe tener un saldo de cero')
-//     return
-//   }
-//     const response = await fetch('http://localhost:3001/home/eliminarCuenta/${cuenta._id}', {
-//       method: 'DELETE'
-//     })
-
-//     if (response.ok) {
-//       obtenerTotalCuentas()
-//       alert('La cuenta se elimino exitosamente')
-//     } else {
-//       console.error('Error al eliminar cuenta:', response.statusText)
-//       alert('Error al eliminar cuenta')
-//     }
-//   } catch (error) {
-//     console.error('Error al eliminar cuenta:', error)
-//     alert('Error al eliminar cuenta')
-//   }
-// }
+    if (response.ok) {
+      obtenerTotalCuentas()
+      alert('La cuenta se elimino exitosamente')
+    } else {
+      const responsedata = await response.json()
+      alert(responsedata.message)
+      // console.error('Error al eliminar cuenta:')
+      // alert('Error al eliminar cuenta', response.message)
+    }
+  } catch (error) {
+    console.error('Error al eliminar cuenta:', error)
+    alert('Error al eliminar cuenta:')
+  }
+}
 
 const trasladoCuenta = () => {
   mostrarTraslado.value = true
 }
 
 const realizarTraslado = async () => {
+  if (!cuentaOrigen.value || !cuentaDestino.value) {
+    alert('Debe seleccionar cuenta de origen y cuenta destino')
+    return
+  }
   if (monto.value <= 0) {
     console.log('Falta ingresar el monto')
     alert('Falta ingresar el monto')
     return
   }
-  if (cuentaOrigen.value.moneda !== cuentaDestino.value.moneda) {
-    console.log('No es posible trasladar fondos de monedas distintas')
-    alert('No es posible trasladar fondos de monedas distintas')
-    return
-  }
+  // if (cuentaOrigen.value.moneda !== cuentaDestino.value.moneda) {
+  //   console.log('No es posible trasladar fondos de monedas distintas')
+  //   alert('No es posible trasladar fondos de monedas distintas')
+  //   return
+  // }
 
   try {
     const data = {
@@ -82,7 +91,7 @@ const realizarTraslado = async () => {
       return
     }
 
-    const response = await fetch('http://localhost:3001/home/trasladarFondos', {
+    const response = await fetch('http://localhost:3002/home/trasladarFondos', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -98,14 +107,11 @@ const realizarTraslado = async () => {
   }
 }
 
-const mostrarTraslado = ref(false)
-
-const cuentaOrigen = ref(null)
-const cuentaDestino = ref(null)
-const monto = ref(null)
-
 const editCuenta = (cuenta) => {
   cuentaPorEditar.value = cuenta
+  newNombre.value = cuenta.nombre
+  newCuenta.value = cuenta.cuenta
+  newMoneda.value = cuenta.moneda
   mostrarEdit.value = true
 }
 const realizarEdit = async () => {
@@ -116,7 +122,7 @@ const realizarEdit = async () => {
       nuevaCuenta: newCuenta.value,
       nuevaMoneda: newMoneda.value
     }
-    const response = await fetch('http://localhost:3001/home/EditarCuenta', {
+    const response = await fetch('http://localhost:3002/home/EditarCuenta', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -132,22 +138,6 @@ const realizarEdit = async () => {
     alert('Error al editar')
   }
 }
-const mostrarEdit = ref(false)
-const cuentaPorEditar = ref(null)
-
-const newNombre = ref(null)
-const newCuenta = ref(null)
-const newMoneda = ref(null)
-
-const tiposMoneda = [
-  { id: 0, simbolo: '₡' },
-  { id: 1, simbolo: '$' },
-  { id: 2, simbolo: 'Eur' }
-]
-
-//terminar editar ctas
-//Eliminar ctas, validar solo eliminar ctas en cero
-//bitacora de transacciones en atlas
 </script>
 
 <template>
@@ -171,16 +161,15 @@ const tiposMoneda = [
         <td>{{ cuenta.moneda }}</td>
         <td>{{ cuenta.saldo }}</td>
         <button @click="editCuenta(cuenta)">Editar</button>
-        <!-- <button @click="eliminarCuenta(cuenta._id)">Eliminar</button> -->
+        <button @click="eliminarCuenta(cuenta)">Eliminar</button>
       </tr>
     </table>
   </div>
 
   <!-- Editar Cta-->
   <div v-if="mostrarEdit">
-    <h3>Seleccionar cuenta a editar</h3>
-    {{ cuentaPorEditar.nombre }} No. {{ cuentaPorEditar.cuenta }} Moneda
-    {{ cuentaPorEditar.moneda }}
+    <h3>Cuenta a editar</h3>
+
     <form @submit.prevent="realizarEdit">
       <label for="nombre">Nuevo Nombre:</label>
       <input type="text" v-model="newNombre" id="nombre" />

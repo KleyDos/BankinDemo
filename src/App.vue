@@ -1,22 +1,59 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterLink, RouterView, useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
+
+// const router = useRouter()
+
+const tipoCambioCompra = ref(null)
+const tipoCambioVenta = ref(null)
+
+const obtenerTiposCambio = async () => {
+  try {
+    const response = await fetch('http://localhost:3002/obtenerTiposCambio')
+    const tipoCambio = await response.json()
+    tipoCambioCompra.value = tipoCambio.tipoCambioCompra
+    tipoCambioVenta.value = tipoCambio.tipoCambioVenta
+    console.log('tipoCambioCompra es', tipoCambioCompra)
+  } catch (error) {
+    console.error('Error a obtener tipos de cambio:', error)
+  }
+}
+
+onMounted(() => {
+  obtenerTiposCambio()
+})
 </script>
 
 <template>
-<div id="layout">
-  <header>
-    <!-- <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" /> -->
+  <div id="layout">
+    <header>
+      <!-- <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" /> -->
+      <h3>Tipos de Cambio</h3>
 
-    <div class="wrapper">
-            <nav>
-        <RouterLink to="/">Home</RouterLink> |
-        <RouterLink to="/registro">Registro de Cuentas</RouterLink>
-      </nav>
-    </div>
-  </header>
+      <table class="default">
+				<h4>Colones - Dólar</h4>
+        <tr>
+          <th>Compra</th> |
+          <th>Venta</th>
+        </tr>
+        <tr>
+          <td>₡: {{ tipoCambioCompra }}</td> |
+          <td>₡: {{ tipoCambioVenta }}</td>
+        </tr>
+      </table>
 
-  <RouterView />
-	</div>
+      <div class="wrapper">
+        <nav>
+          <RouterLink to="/">Home</RouterLink> |
+          <RouterLink to="/registro">Registro de Cuentas</RouterLink> |
+          <RouterLink to="/tipoCambios">Registro de Tipos de Cambio</RouterLink> |
+          <RouterLink to="/bitacora">Bitacora Transaccional</RouterLink>
+        </nav>
+      </div>
+    </header>
+
+    <RouterView />
+  </div>
 </template>
 
 <style scoped>

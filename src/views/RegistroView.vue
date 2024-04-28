@@ -37,7 +37,7 @@ const checkForm = async () => {
     alert('Falta ingresar el saldo')
     return
   }
-	/// completa solo el .value
+  /// completa solo el .value
   // if (!cuenta.cuenta !== detalleCta.value.cuenta) {
   //   console.log('Cuenta ya existe')
   //   alert('Esta cuenta ya se encuentra registrada')
@@ -51,7 +51,7 @@ const checkForm = async () => {
     moneda: moneda.value,
     saldo: saldo.value
   }
-  const response = await fetch('http://localhost:3001/cuenta/agregarCuentaDB', {
+  const response = await fetch('http://localhost:3002/cuenta/agregarCuentaDB', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -63,8 +63,11 @@ const checkForm = async () => {
 
   console.log(response)
 }
-
-
+const tiposMoneda = [
+  { id: 0, simbolo: '₡' },
+  { id: 1, simbolo: '$' },
+  { id: 2, simbolo: 'Eur' }
+]
 </script>
 
 <template>
@@ -76,7 +79,7 @@ const checkForm = async () => {
       v-model="nombre"
       name="nombre"
       id="nombre"
-      placeholder="Nombre y Apellidos"
+      placeholder="Nombre"
     >
     </input-base>
 
