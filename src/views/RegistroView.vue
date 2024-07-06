@@ -1,6 +1,8 @@
 <script setup>
 import { ref, computed } from 'vue'
 import inputBase from '../components/inputBase.vue'
+import Swal from 'sweetalert2'
+
 
 const nombre = ref(null)
 const cuenta = ref(null)
@@ -19,23 +21,43 @@ const checkForm = async () => {
   //hacer validacion de todos los datos reglas: nombre= tenga 2 palabras, cuenta 17 caracteres, moneda exista y saldo que tenga valor
   if (!nombre.value.includes(' ')) {
     console.log('Nombre debe contener al menos dos palabras')
-    alert('Nombre debe contener al menos dos palabras')
-    return
+    // alert('Nombre debe contener al menos dos palabras')
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Nombre debe contener al menos dos palabras'
+    })
+		return
   }
   if (cuenta.value.length !== 3) {
     console.log('Cuenta debe contener 3 caracteres')
-    alert('Cuenta debe contener 3 caracteres')
-    return
+    // alert('Cuenta debe contener 3 caracteres')
+     Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Cuenta debe contener 3 caracteres'
+    })
+		return
   }
   if (!moneda.value) {
     console.log('Falta seleccionar la moneda')
-    alert('Falta seleccionar la moneda')
-    return
+    // alert('Falta seleccionar la moneda')
+Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Falta seleccionar la moneda'
+    })
+		return
   }
   if (!saldo.value) {
     console.log('Falta ingresar el saldo')
-    alert('Falta ingresar el saldo')
-    return
+    // alert('Falta ingresar el saldo')
+     Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Falta ingresar el saldo'
+    })
+		return
   }
   /// completa solo el .value
   // if (!cuenta.cuenta !== detalleCta.value.cuenta) {
@@ -51,17 +73,39 @@ const checkForm = async () => {
     moneda: moneda.value,
     saldo: saldo.value
   }
+	try {
   const response = await fetch('http://localhost:3002/cuenta/agregarCuentaDB', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(data)
-  }).then((res) => {
-    return res.json()
   })
+	const responseData = await response.json()
+    console.log(responseData)
 
-  console.log(response)
+    // Mostrar alerta de éxito
+    Swal.fire({
+      position: 'top-end',
+      icon: 'success',
+      title: 'Cuenta registrada de forma exitosa',
+      showConfirmButton: false,
+      timer: 2500
+    })
+
+    // Limpiar los campos después del guardado exitoso
+    nombre.value = null
+    cuenta.value = null
+    moneda.value = null
+    saldo.value = null
+  } catch (error) {
+    console.error('Error al guardar la cuenta:', error)
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Ha ocurrido un error al guardar la cuenta. Por favor, intenta nuevamente.'
+    })
+  }
 }
 const tiposMoneda = [
   { id: 0, simbolo: '₡' },
@@ -73,39 +117,58 @@ const tiposMoneda = [
 <template>
   <h1>Registro de Cuentas</h1>
   <form @submit.stop.prevent="checkForm">
-    <input-base
-      inputLabel="Nombre"
-      type="text"
-      v-model="nombre"
-      name="nombre"
-      id="nombre"
-      placeholder="Nombre"
-    >
-    </input-base>
+    <div class="form-group w-50 m-auto">
+      <label for="nombre">Nombre de Cuenta</label>
+      <input
+        inputLabel="Nombre"
+        type="text"
+        v-model="nombre"
+        name="nombre"
+        id="nombre"
+        placeholder="Ingrese nombre"
+        class="form-control w-100 m-auto"
+      />
+    </div>
 
-    <input-base
-      inputLabel="Cuenta"
-      type="text"
-      v-model="cuenta"
-      name="cuenta"
-      id="cuenta"
-      placeholder="No. Cuenta"
-    >
-    </input-base>
-
+    <div class="form-group w-50 m-auto">
+      <label for="cuenta">Cuenta</label>
+      <input
+        inputLabel="Cuenta"
+        type="text"
+        v-model="cuenta"
+        name="cuenta"
+        id="cuenta"
+        placeholder="No. de cuenta"
+        class="form-control w-100 m-auto"
+      />
+    </div>
     <p>
-      <label for="moneda">Moneda</label>
-      <select id="moneda" v-model="moneda" name="moneda">
-        <option v-for="tipo in tiposMoneda" :key="tipo.id">{{ tipo.simbolo }}</option>
+      <label for="moneda"  >Moneda</label>
+      <select id="moneda" v-model="moneda" class="form-select w-10 m-auto" name="moneda">
+        <option v-for="tipo in tiposMoneda"  :key="tipo.id">{{ tipo.simbolo }}</option>
       </select>
     </p>
-    <input-base inputLabel="Saldo" type="number" v-model="saldo" placeholder="0.00"> </input-base>
 
-    <p>
-      <input type="submit" value="Enviar" />
-    </p>
+    <div class="form-group w-50 m-auto">
+      <label for="saldo">Saldo</label>
+      <input
+        inputLabel="Saldo"
+        type="number"
+        v-model="saldo"
+        placeholder="Ingrese saldo "
+        name="saldo"
+        id="saldo"
+        class="form-control w-100 m-auto"
+      />
+    </div>
+    <br />
     <p v-if="showlabel()">{{ detalleCta }}</p>
+    <p>
+      <button type="submit" class="btn btn-primary btn-lg">Registrar cuenta</button>
+    </p>
   </form>
+
+
 </template>
 
 <style>

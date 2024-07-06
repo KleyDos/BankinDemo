@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import inputBase from '../components/inputBase.vue'
+import Swal from 'sweetalert2'
 
 const tipoCambioCompra = ref(null)
 const tipoCambioVenta = ref(null)
@@ -37,26 +38,57 @@ const guardarTipoCambio = async () => {
 
     console.log('Tipos de cambio guardados correctamente')
 
-    alert('Tipos de cambio guardados correctamente')
-
+    // alert('Tipos de cambio guardados correctamente')
+    Swal.fire({
+      position: 'top-end',
+      icon: 'success',
+      title: 'Se ha actualizado el Tipo de Cambio',
+      showConfirmButton: false,
+      timer: 1500
+    })
     obtenerTipoCambio()
-		
   } catch (error) {
     console.err('Error al guardar tipos de cambio:', error)
+    Swal.fire({
+      position: 'top-end',
+      icon: 'error',
+      title: 'Error al guardar tipos de cambio',
+      text: 'Ha ocurrido un error, por favor intenta nuevamente',
+      showConfirmButton: true
+    })
   }
 }
 </script>
 
 <template>
   <div>
-    <h2>Tipos de Cambio</h2>
-    <label for="tipoCambioCompra">Tipo de Cambio Compra:</label>
-    <input type="number" v-model="tipoCambioCompra" id="tipoCambioCompra" />
+    <h4>Tipos de Cambio</h4>
     <br />
-    <label for="tipoCambioVenta">Tipo de Cambio Venta:</label>
-    <input type="number" v-model="tipoCambioVenta" id="tipoCambioVenta" />
+    <div class="form-group w-100 m-auto">
+      <label for="tipoCambioCompra">Tipo de Cambio Compra:</label>
+      <input
+        type="number"
+        v-model="tipoCambioCompra"
+        placeholder="0.00"
+        id="tipoCambioCompra"
+        class="form-control w-100 m-auto"
+      />
+
+      <br />
+      <label for="tipoCambioVenta">Tipo de Cambio Venta:</label>
+
+      <input
+        type="number"
+        v-model="tipoCambioVenta"
+        placeholder="0.00"
+        id="tipoCambioVenta"
+        class="form-control w-100 m-auto"
+      />
+    </div>
     <br />
 
-    <button @click="guardarTipoCambio">Guardar Tipos de Cambio</button>
+    <button type="button" @click="guardarTipoCambio" class="btn btn-primary btn-lg">
+      Guardar Tipos de Cambio
+    </button>
   </div>
 </template>
