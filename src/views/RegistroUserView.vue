@@ -59,7 +59,7 @@ const registrarUsuario = async () => {
 <template>
   <h1>Registro de Usuario</h1>
   <form @submit.prevent="registrarUsuario">
-    <div class="form-group w-50 m-auto">
+    <div class="form-group w-100 m-auto">
       <label for="nombre">Nombre </label>
       <input
         inputLabel="Nombre"
@@ -72,7 +72,7 @@ const registrarUsuario = async () => {
         class="form-control w-50 m-auto"
       />
     </div>
-    <div class="form-group w-50 m-auto">
+    <div class="form-group w-100 m-auto">
       <label for="idUsuario">Identificación</label>
       <input
         inputLabel="ID"
@@ -84,7 +84,7 @@ const registrarUsuario = async () => {
         class="form-control w-50 m-auto"
       />
     </div>
-    <div class="form-group w-50 m-auto">
+    <div class="form-group w-100 m-auto">
       <label for="usuario"> Usuario </label>
       <input
         inputLabel="usuario"
@@ -97,7 +97,7 @@ const registrarUsuario = async () => {
         class="form-control w-50 m-auto"
       />
     </div>
-    <div class="form-group w-50 m-auto">
+    <div class="form-group w-100 m-auto">
       <label for="Contraseña">Contraseña</label>
       <input
         inputLabel="Contraseña"

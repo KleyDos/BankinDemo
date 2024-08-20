@@ -4,11 +4,18 @@ import { ref, onMounted } from 'vue'
 import { useAuthStore } from './stores/auth'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRightFromBracket, faCoins } from '@fortawesome/free-solid-svg-icons'
 import { faBars } from '@fortawesome/free-solid-svg-icons'
+import { faHouse } from '@fortawesome/free-solid-svg-icons'
+import { faCalendar } from '@fortawesome/free-solid-svg-icons'
+import { faUserPen } from '@fortawesome/free-solid-svg-icons'
 
 library.add(faArrowRightFromBracket)
 library.add(faBars)
+library.add(faHouse)
+library.add(faCoins)
+library.add(faCalendar)
+library.add(faUserPen)
 
 ///pinia
 ///confirmar eliminar cta*******listo
@@ -26,9 +33,10 @@ library.add(faBars)
 ////Al refrescar no se salga*****listo
 ////Añadir el nombre del usuario al estar logeado****listo
 ////Añadir botton para logout****listo
-////Opciones desplegables en la parte lateral
+////Opciones desplegables en la parte lateral Sidebar***listo
 ////Añadir un boton en el registro para volver a login****listo
 
+////Con Pinia  mantener los filtros de la bitacora
 const authStore = useAuthStore()
 const router = useRouter()
 const isMenuVisible = ref(false)
@@ -49,38 +57,56 @@ const toggleMenu = () => {
 <template>
   <div>
     <header class="custom-header bg-primary text-white">
-
-        <div class="container d-flex justify-content-between align-items-center">
-          <router-link class="navbar-brand" to="/"></router-link>
-          <div class="d-flex align-items-center ms-auto">
-            <span v-if="authStore.isAuthenticated" class="me-3">
-               Bienvenido, {{ authStore.usuario }}</span
-            >
-            <button
-              v-if="authStore.isAuthenticated"
-              @click="logout"
-              type="button"
-              class="btn btn-outline-light"
-            >
-              <font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" /> Logout
-            </button>
-<button
-        v-if="authStore.isAuthenticated"
-        class="btn btn-primary mb-3"
-        type="button"
-        @click="toggleMenu"
-      >
-
-        <font-awesome-icon :icon="['fas', 'bars']" />
-      </button>
+      <div class="container d-flex justify-content-between align-items-center">
+        <router-link class="navbar-brand" to="/"></router-link>
+        <div class="d-flex align-items-center ms-auto">
+          <span v-if="authStore.isAuthenticated" class="me-3">
+            Bienvenido, {{ authStore.usuario }}</span
+          >
+          <button
+            v-if="authStore.isAuthenticated"
+            @click="logout"
+            type="button"
+            class="btn btn-outline-light"
+          >
+            <font-awesome-icon :icon="['fas', 'arrow-right-from-bracket']" /> Logout
+          </button>
+          <button
+            v-if="authStore.isAuthenticated"
+            class="btn btn-primary mb-3"
+            type="button"
+            @click="toggleMenu"
+          >
+            <font-awesome-icon :icon="['fas', 'bars']" />
+          </button>
         </div>
       </div>
     </header>
+    <div
+      :class="{ 'menu-visible': isMenuVisible, 'menu-hidden': !isMenuVisible }"
+      class="sidebar-menu"
+    >
+      <h3>Manejo de cuentas</h3>
+      <router-link class="list-group-item list-group-item-action" to="/">
+        <font-awesome-icon :icon="['fas', 'house']" />
+        Detalle de cuentas</router-link
+      >
+      <router-link class="list-group-item list-group-item-action" to="/registro">
+        <font-awesome-icon :icon="['fas', 'user-pen']" />
+        Registro de Cuentas</router-link
+      >
+      <router-link class="list-group-item list-group-item-action" to="/tipoCambios">
+        <font-awesome-icon :icon="['fas', 'coins']" />
+        Registro de Tipos de Cambio</router-link
+      >
+      <router-link class="list-group-item list-group-item-action" to="/bitacora">
+        <font-awesome-icon :icon="['fas', 'calendar']" />
+        Bitacora Transaccional</router-link
+      >
+    </div>
 
     <main class="container mt-3">
-
-
-      <div id="layout" v-if="isMenuVisible" class="list-group">
+      <!-- <div id="layout" v-if="isMenuVisible" class="list-group">
         <router-link class="list-group-item list-group-item-action" to="/"
           >Detalle de Cuentas</router-link
         >
@@ -93,7 +119,7 @@ const toggleMenu = () => {
         <router-link class="list-group-item list-group-item-action" to="/bitacora"
           >Bitacora Transaccional</router-link
         >
-      </div>
+      </div> -->
 
       <router-view />
     </main>
@@ -161,13 +187,34 @@ header {
   position: fixed;
   width: 100;
   z-index: 1000;
-	border-radius: 4px 4px 4px 4px;
-	overflow: hidden;
+  border-radius: 4px 4px 4px 4px;
+  overflow: hidden;
 }
 .custom-header {
-  background-color: hwb(234 38% 13%); }
+  background: hwb(118 17% 24%);
+}
 main {
   padding-top: 65px; /* Ajusta este valor según la altura del header */
+}
+.sidebar-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 250px;
+  background: #3005a5f6;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  transform: translateX(-250px);
+  transition: transform 0.3s ease;
+  z-index: 1001;
+  padding-top: 70px; /* Ajusta este valor según la altura del header */
+  font-family: 'Arial', sans-serif;
+}
+.menu-visible {
+  transform: translateX(0);
+}
+.menu-hidden {
+  transform: translateX(-250px);
 }
 /* nav {
   padding: 30px;
